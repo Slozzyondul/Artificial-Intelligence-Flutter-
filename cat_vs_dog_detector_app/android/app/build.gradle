@@ -24,7 +24,7 @@ android {
         applicationId = "com.example.cat_vs_dog_detector_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdkVersion 19
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 30
         versionCode = flutter.versionCode
         versionName = flutter.versionName
