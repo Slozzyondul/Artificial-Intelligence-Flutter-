@@ -22,26 +22,29 @@ class _HomeScreenState extends State<HomeScreen> {
               end: Alignment.bottomRight,
             ),
           ),
-          child: const Column(
+          child: Column(
             children: <Widget>[
-              SizedBox(height: 50),
-              Text(
-                'What you need',
+              const SizedBox(height: 50),
+              const Text(
+                'What you looking for',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                 ),
               ),
-              SizedBox(height: 5),
-              Text(
-                'Is it a cat or a dog?',
+              const SizedBox(height: 5),
+              const Text(
+                'Test it here to know if it is a cat or a dog?',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 30,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
+              Expanded(
+                child: Container(), // Expands to take up remaining space
+              ),
             ],
           ),
         ),
