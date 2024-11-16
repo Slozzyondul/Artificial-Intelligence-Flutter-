@@ -48,8 +48,51 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Container(), // Expands to take up remaining space
               ),
+              useCamera(),
+              SizedBox(height: deviceHeight! * 0.25,),
+              uploadImage(),
+               SizedBox(height: deviceHeight! * 0.15,),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget useCamera() {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: deviceWidth! - 250,
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 18),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          "Use your cam",
+          style: TextStyle(color: Colors.yellow),
+        ),
+      ),
+    );
+  }
+
+  Widget uploadImage() {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: deviceWidth! - 150,
+
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 18),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          "upload form storage",
+          style: TextStyle(color: Colors.yellow),
         ),
       ),
     );
