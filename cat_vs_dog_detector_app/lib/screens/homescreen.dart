@@ -8,13 +8,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  double? deviceHeight, deviceWidth;
   @override
   Widget build(BuildContext context) {
+    deviceWidth = MediaQuery.of(context).size.width;
+    deviceHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
         body: Container(
-          padding: EdgeInsetsDirectional.all(2),
+          padding: const EdgeInsetsDirectional.all(2),
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.black, Colors.yellow],
