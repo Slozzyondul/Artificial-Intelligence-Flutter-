@@ -49,9 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(), // Expands to take up remaining space
               ),
               useCamera(),
-              SizedBox(height: deviceHeight! * 0.25,),
+              SizedBox(
+                height: deviceHeight! * 0.25,
+              ),
               uploadImage(),
-               SizedBox(height: deviceHeight! * 0.15,),
+              SizedBox(
+                height: deviceHeight! * 0.15,
+              ),
             ],
           ),
         ),
@@ -59,18 +63,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//widget to use camera
   Widget useCamera() {
     return GestureDetector(
       onTap: () {},
       child: Container(
         width: deviceWidth! - 250,
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
         decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
+        child: const Text(
           "Use your cam",
           style: TextStyle(color: Colors.yellow),
         ),
@@ -78,19 +83,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//widget to upload image
   Widget uploadImage() {
     return GestureDetector(
       onTap: () {},
       child: Container(
         width: deviceWidth! - 150,
-
         alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(horizontal: 25, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
         decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
+        child: const Text(
           "upload form storage",
           style: TextStyle(color: Colors.yellow),
         ),
