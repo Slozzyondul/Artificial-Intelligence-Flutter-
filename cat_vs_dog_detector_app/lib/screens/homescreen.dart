@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-//widget to upload image
+//widget to upload image from local storage
   Widget uploadImage() {
     return GestureDetector(
       onTap: () {},
