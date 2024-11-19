@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:tflite/tflite.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
+  
 }
+
+
 
 class _HomeScreenState extends State<HomeScreen> {
   double? deviceHeight, deviceWidth;
@@ -102,4 +106,35 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+// detectIage(File image) async {
+//   var output = await Tflite.runModelOnImage(
+//     path: image.path,
+//     numResults: 2,
+//     threshold: 0.6,
+//     imageMean: 127.5,
+//     imageStd: 127.5, 
+//   );
+//   setState(() {
+//     _output = output;
+//     _loading = false;
+//   });
+// }
+
+
+
+loadModel() async {
+  await Tflite.loadModel(
+      model: 'assets/model_unquant.tflite', labels: 'assets/labels.txt');
+}
+
+
+getModelPath() {
+  return "converted_tflite_quantized/model.tflite";
+}
+
+
+getLabelPath() {
+  return "converted_tflite_quantized/labels.txt";
 }
