@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Home(),
       ),
@@ -45,7 +46,7 @@ class _HomeState extends State<Home> {
                   height: cubeSize.height,
                   leftChild: const Center(
                     child: Text(
-                      'Hey',
+                      'Solo',
                       style: TextStyle(fontSize: 40),
                     ),
                   ),
@@ -96,16 +97,16 @@ class _CubeState extends State<Cube> {
             Transform(
               transform: Matrix4.identity()..rotateX(90 * pi / 180),
               alignment: Alignment.bottomCenter,
-              child: Material(
+              child: const Material(
                 color: Colors.red,
-                child: const FlutterLogo(size: 200),
+                child: FlutterLogo(size: 200),
               ),
             ),
             Transform(
               transform: Matrix4.identity()..rotateX(-90 * pi / 180),
-              child: Material(
+              child: const Material(
                 color: Colors.orange,
-                child: const FlutterLogo(size: 200),
+                child: FlutterLogo(size: 200),
               ),
             ),
             Transform(
