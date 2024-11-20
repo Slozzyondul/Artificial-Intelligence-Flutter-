@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:image/image.dart' as img;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,69 +17,132 @@ class _HomeScreenState extends State<HomeScreen> {
   double? deviceHeight, deviceWidth;
 
   late File _image;
-  late List<dynamic>? _output;
+  late List<String> _labels;
+  late Interpreter _interpreter;
+  List<dynamic>? _output;
   final picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    loadModel().then((value) {
-      setState(() {});
-    });
+    loadModelAndLabels();
+  }
+
+  void interpretResults(List<double> output) {
+    const labels = ['cat', 'dog'];
+    final maxIndex = output
+        .indexWhere((prob) => prob == output.reduce((a, b) => a > b ? a : b));
+    print('Prediction: ${labels[maxIndex]}, Confidence: ${output[maxIndex]}');
+  }
+
+  Future<void> loadModelAndLabels() async {
+    try {
+      // Load the model
+      _interpreter = await Interpreter.fromAsset('model_unquant.tflite');
+
+      // Load labels
+      String labelData =
+          await DefaultAssetBundle.of(context).loadString('assets/labels.txt');
+      _labels = labelData.split('\n');
+    } catch (e) {
+      debugPrint("Error loading model or labels: $e");
+    }
+  }
+
+  Future<List<double>> runInference(List<List<List<double>>> input) async {
+    // Load the model
+
+    // Prepare the input tensor
+    final inputTensor = [input]; // Add batch dimension
+
+    // Prepare the output tensor
+    final outputTensor = List.filled(1 * 2, 0.0).reshape([1, 2]);
+
+    // Run the model
+
+    _interpreter.run(inputTensor, outputTensor);
+
+    // Close the interpreter
+    _interpreter.close();
+
+    // Return the output probabilities
+    return outputTensor[0];
   }
 
   Future<void> detectImage(File image) async {
     try {
-      var output = await Tflite.runModelOnImage(
-        path: image.path,
-        numResults: 2,
-        threshold: 0.6,
-        imageMean: 127.5,
-        imageStd: 127.5,
-      );
+      // Preprocess the image
+      final preprocessedImage = await preprocessImage(image);
+
+      // Run inference
+      final result = await runInference(preprocessedImage);
+
+      // Interpret results
       setState(() {
-        _output = output;
+        _output = [
+          {
+            'label': _labels[result.indexWhere(
+                (val) => val == result.reduce((a, b) => a > b ? a : b))],
+            'confidence': result.reduce((a, b) => a > b ? a : b)
+          }
+        ];
       });
     } catch (e) {
       debugPrint("Error running model: $e");
     }
   }
 
-  // detectImage(File image) async {
-  //   var output = await Tflite.runModelOnImage(
-  //     path: image.path,
-  //     numResults: 2,
-  //     threshold: 0.6,
-  //     imageMean: 127.5,
-  //     imageStd: 127.5,
-  //   );
-  //   setState(() {
-  //     _output = output!;
-  //   });
+  // Future<void> detectImage(File image) async {
+  //   try {
+  //     // Preprocess the image
+  //     Uint8List input = await preprocessImage(image);
+
+  //     // Create input and output tensors
+  //     var output =
+  //         List.filled(_labels.length, 0.0).reshape([1, _labels.length]);
+
+  //     // Run the model
+  //     _interpreter.run(input, output);
+
+  //     // Get the results
+  //     int maxIndex = output[0].indexWhere(
+  //         (value) => value == output[0].reduce((a, b) => a > b ? a : b));
+  //     setState(() {
+  //       _output = [
+  //         {'label': _labels[maxIndex], 'confidence': output[0][maxIndex]}
+  //       ];
+  //     });
+  //   } catch (e) {
+  //     debugPrint("Error running model: $e");
+  //   }
   // }
 
-  Future<void> loadModel() async {
-    try {
-      await Tflite.loadModel(
-        model: 'assets/model_unquant.tflite',
-        labels: 'assets/labels.txt',
-      );
-    } catch (e) {
-      debugPrint("Error loading model: $e");
-    }
-  }
+  Future<List<List<List<double>>>> preprocessImage(File imageFile) async {
+    // Load and decode the image
+    final img.Image? originalImage =
+        img.decodeImage(await imageFile.readAsBytes());
 
-  // loadModel() async {
-  //   await Tflite.loadModel(
-  //     model: 'assets/model_unquant.tflite',
-  //     labels: 'assets/labels.txt',
-  //   );
-  // }
+    // Resize to 224x224
+    final img.Image resizedImage =
+        img.copyResize(originalImage!, width: 224, height: 224);
 
-  @override
-  void dispose() {
-    Tflite.close();
-    super.dispose();
+    // Normalize pixel values to [0, 1]
+    final List<List<List<double>>> normalizedImage = List.generate(
+      resizedImage.height,
+      (y) => List.generate(
+        resizedImage.width,
+        (x) {
+          final pixel = resizedImage.getPixel(x, y);
+          return [
+            pixel.r / 255.0, // Red channel
+            pixel.g / 255.0, // Green channel
+            pixel.b / 255.0, // Blue channel
+          ];
+        },
+      ),
+    );
+
+    return normalizedImage;
   }
 
   captureImageUsingCamera() async {
@@ -163,7 +228,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-//widget to use camera
   Widget useCamera() {
     return GestureDetector(
       onTap: () {
@@ -185,7 +249,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-//widget to upload image from local storage
   Widget uploadImage() {
     return GestureDetector(
       onTap: () {
@@ -200,33 +263,10 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: const Text(
-          "upload form storage",
+          "upload from storage",
           style: TextStyle(color: Colors.yellow),
         ),
       ),
-    );
-  }
-
-  Widget resultOutput() {
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: deviceHeight! * 0.5,
-          child: Image.file(_image),
-        ),
-        SizedBox(height: deviceHeight! * 0.025),
-        _output != null
-            ? Text(
-                '${_output![0]['label']}',
-                style: const TextStyle(color: Colors.white, fontSize: 15),
-              )
-            : Expanded(
-                child: Container(),
-              ),
-        SizedBox(
-          height: deviceHeight! * 0.025,
-        ),
-      ],
     );
   }
 }
