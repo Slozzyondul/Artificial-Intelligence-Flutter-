@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
-
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
@@ -15,17 +15,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   double? deviceHeight, deviceWidth;
-
+  String? _error;
   late File _image;
   late List<String> _labels;
   late Interpreter _interpreter;
   List<dynamic>? _output;
   final picker = ImagePicker();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadModelAndLabels();
+    loadModelAndLabels().then((_) {
+      setState(() {
+        _isLoading = false; // Loading complete
+      });
+    });
   }
 
   void interpretResults(List<double> output) {
@@ -36,16 +41,32 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadModelAndLabels() async {
+    final directory =
+        await getApplicationSupportDirectory(); //Or get other relevant directory for your needs (like getApplicationDocumentsDirectory())
+    final projectPath = directory.path.split('/cat_dog')[0] + '/cat_dog';
     try {
       // Load the model
-      _interpreter = await Interpreter.fromAsset('model_unquant.tflite');
+      _interpreter = await Interpreter.fromFile(
+          File('$projectPath/assets/model_unquant.tflite'));
+      debugPrint("Model loaded successfully.");
 
       // Load labels
       String labelData =
           await DefaultAssetBundle.of(context).loadString('assets/labels.txt');
+      debugPrint("Labels loaded successfully: $labelData");
+
       _labels = labelData.split('\n');
+//checkin if flutter can load model
+      final byteData = await DefaultAssetBundle.of(context)
+          .load('assets/model_unquant.tflite');
+      print(
+          "Model file loaded successfully, size: ${byteData.lengthInBytes} bytes");
     } catch (e) {
-      debugPrint("Error loading model or labels: $e");
+      print("Error loading model file: $e");
+      setState(() {
+        _isLoading = false;
+        _error = "Error loading model or labels: $e";
+      });
     }
   }
 
@@ -178,54 +199,64 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     deviceWidth = MediaQuery.of(context).size.width;
     deviceHeight = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(),
-        body: Container(
-          padding: const EdgeInsetsDirectional.all(2),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black, Colors.yellow],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (_error != null) {
+      return Center(
+        child: Text(_error!),
+      );
+    } else {
+      return SafeArea(
+        child: Scaffold(
+          appBar: AppBar(),
+          body: Container(
+            padding: const EdgeInsetsDirectional.all(2),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.black, Colors.yellow],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 50),
+                const Text(
+                  'What you looking for',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'Test it here to know if it is a cat or a dog?',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Expanded(
+                  child: Container(), // Expands to take up remaining space
+                ),
+                useCamera(),
+                SizedBox(
+                  height: deviceHeight! * 0.25,
+                ),
+                uploadImage(),
+                SizedBox(
+                  height: deviceHeight! * 0.15,
+                ),
+              ],
             ),
           ),
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 50),
-              const Text(
-                'What you looking for',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                'Test it here to know if it is a cat or a dog?',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Expanded(
-                child: Container(), // Expands to take up remaining space
-              ),
-              useCamera(),
-              SizedBox(
-                height: deviceHeight! * 0.25,
-              ),
-              uploadImage(),
-              SizedBox(
-                height: deviceHeight! * 0.15,
-              ),
-            ],
-          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget useCamera() {
