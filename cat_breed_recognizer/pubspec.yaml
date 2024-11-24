@@ -23,4 +23,5 @@ flutter:
 
   assets:
     - assets/flutter_logo.png
+    - assets/ai.jpeg
 

@@ -9,7 +9,7 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
-  double? height, width;
+  double? _height, _width;
 
   @override
   void initState() {
@@ -21,21 +21,23 @@ class _SplashscreenState extends State<Splashscreen> {
     await Future.delayed(const Duration(seconds: 5)); // Display for 5 seconds
     // Navigate to homescreen
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const Homescreen()),
+      MaterialPageRoute(builder: (context) => Homescreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    height = MediaQuery.of(context).size.height;
-    width = MediaQuery.of(context).size.width;
+    _height = MediaQuery.of(context).size.height;
+    _width = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: Colors.yellow,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: const Center(
           child: Text(
             "Cat Breed Recognizer",
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.yellow,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
@@ -49,19 +51,22 @@ class _SplashscreenState extends State<Splashscreen> {
           Center(
             child: Image.asset(
               'assets/flutter_logo.png',
-              width: width! * 0.65,
-              height: height! * 0.65,
+              width: _width! * 0.65,
+              height: _height! * 0.65,
             ),
           ),
-          SizedBox(height: height! * 0.05),
+          SizedBox(height: _height! * 0.05),
           cicularIndicator(),
-          SizedBox(height: height! * 0.05),
+          SizedBox(height: _height! * 0.05),
         ],
       ),
     );
   }
 
   Widget cicularIndicator() {
-    return const CircularProgressIndicator();
+    return const CircularProgressIndicator(
+      backgroundColor: Colors.black,
+      color: Colors.yellow,
+    );
   }
 }
