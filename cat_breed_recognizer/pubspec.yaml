@@ -5,18 +5,18 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.3
+  sdk: 3.5.3
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_native_splash: ^2.2.18
-  cupertino_icons: ^1.0.8
+  cupertino_icons: 1.0.8
+  image_picker: 1.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: 4.0.0
 
 flutter:
   uses-material-design: true
@@ -24,8 +24,3 @@ flutter:
   assets:
     - assets/flutter_logo.png
 
-flutter_native_splash:
-  color: "#cfffba" # Background color of the splash screen
-  image: assets/flutter_logo.png # Path to the Flutter logo or custom splash image
-  android: true # Enable for Android
-  ios: true # Enable for iOS
