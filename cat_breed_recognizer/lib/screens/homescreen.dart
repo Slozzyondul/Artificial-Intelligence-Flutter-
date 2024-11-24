@@ -21,12 +21,37 @@ class _HomescreenState extends State<Homescreen> {
   @override
   void initState() {
     super.initState();
-    imagePicker = ImagePicker(); 
+    imagePicker = ImagePicker();
+    loadDataModelsFiles();
   }
 
-  selectPhoto() async {}
+  loadDataModelsFiles() async {}
 
-  capturePhoto() async {}
+  imageClassification() async {}
+
+  // Function to select a photo from the gallery
+  Future<void> selectPhoto() async {
+    final XFile? pickedFile =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+        imageClassification();
+      });
+    }
+  }
+
+  // Function to capture a photo using the camera
+  Future<void> capturePhoto() async {
+    final XFile? pickedFile =
+        await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+        imageClassification();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
