@@ -8,14 +8,14 @@ class Homescreen extends StatefulWidget {
 
   @override
   State<Homescreen> createState() => _HomescreenState();
-}
+} 
 
 class _HomescreenState extends State<Homescreen> {
   double? _height, _width;
 
   late Future<File> imageFile;
   File? _image;
-  String result = 'Streety';
+  String result = '';
   late ImagePicker imagePicker;
 
   @override
