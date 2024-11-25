@@ -5,19 +5,22 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: 3.5.3
+
+  sdk: ">=3.0.0 <4.0.0"
+
+
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: 1.0.8
   image_picker: 1.1.2
-  tflite: 1.1.2
+  tflite_flutter: ^0.9.1
+  tflite_flutter_helper: ^0.3.1
+  camera: ^0.9.8+1
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: 4.0.0
+
+
 
 flutter:
   uses-material-design: true
@@ -27,4 +30,3 @@ flutter:
     - assets/ai.jpeg
     - assets/labels.txt
     - assets/model_unquant.tflite
-
