@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,30 @@ class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
   late File image;
   String resultText = "getting output....";
+  ImagePicker pickerImage = ImagePicker();
+
+  pickImageFromGallery() async {
+    var imageFile = await pickerImage.pickImage(source: ImageSource.gallery);
+
+    if (imageFile != null) {
+      setState(() {
+        image = File(imageFile.path);
+        loading = false;
+      });
+    }
+  }
+
+  captureImageUsingCamera() async {
+    var imageFile = await pickerImage.pickImage(source: ImageSource.camera);
+
+    if (imageFile != null) {
+      setState(() {
+        image = File(imageFile.path);
+        loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -101,7 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Colors.yellow,
                                         child: InkWell(
                                           splashColor: Colors.white,
-                                          onTap: () {},
+                                          onTap: () {
+                                            pickImageFromGallery();
+                                          },
                                           child: const Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
@@ -130,7 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Colors.yellow,
                                         child: InkWell(
                                           splashColor: Colors.white,
-                                          onTap: () {},
+                                          onTap: () {
+                                            captureImageUsingCamera();
+                                          },
                                           child: const Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
