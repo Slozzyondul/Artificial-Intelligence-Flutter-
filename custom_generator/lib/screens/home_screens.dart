@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,6 +11,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool loading = true;
+  late File image;
+  String resultText = "getting output....";
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -31,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Center(
                   child: loading
+                      //if the condition is true, renders the UI for pick image, capture image or live image
                       ? Container(
+                          padding: const EdgeInsets.only(top: 140),
                           decoration: BoxDecoration(
                             color: Colors.black12,
                             borderRadius: BorderRadius.circular(20),
@@ -145,10 +151,63 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
+                              const SizedBox(height: 50),
                             ],
                           ),
                         )
-                      : Container(),
+                      //renders the UI for outputting results by applying the algorithm
+                      : Container(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                height: 200,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      child: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            resultText = "fetching output....";
+                                            loading = true;
+                                          });
+                                        },
+                                        icon: const Icon(
+                                          Icons.arrow_back_ios_new_outlined,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width -
+                                          200,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.file(
+                                          image,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Container(
+                                child: Text(
+                                  resultText,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                 )
               ],
             ),
