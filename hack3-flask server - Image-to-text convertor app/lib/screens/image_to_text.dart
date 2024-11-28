@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,8 +37,9 @@ class _ImageToTextAppState extends State<ImageToTextApp> {
     final response = await http.Response.fromStream(await request.send());
 
     if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body); // Parse JSON response
       setState(() {
-        _extractedText = response.body;
+        _extractedText = responseData['text']; // Extract text field
       });
     } else {
       setState(() {
@@ -75,4 +77,3 @@ class _ImageToTextAppState extends State<ImageToTextApp> {
     );
   }
 }
-
